@@ -212,7 +212,8 @@ function Coin() {
       ) : (
         <>
           <LastUpdated>
-            <span>Last Updated</span> : {tickersData?.last_updated}
+            <span>Last Updated</span> :{" "}
+            {tickersData?.last_updated.substring(0, 10)}
           </LastUpdated>
           <Overview>
             <OverviewItem>
@@ -225,7 +226,10 @@ function Coin() {
             </OverviewItem>
             <OverviewItem>
               <span>Price:</span>
-              <span>${tickersData?.quotes.USD.price.toFixed(3)}</span>
+              <span>
+                ${tickersData?.quotes.USD.price.toFixed(3)} (
+                {tickersData?.quotes.USD.percent_change_24h}%)
+              </span>
             </OverviewItem>
           </Overview>
 
