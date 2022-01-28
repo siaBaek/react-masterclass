@@ -212,7 +212,7 @@ function Coin() {
       ) : (
         <>
           <LastUpdated>
-            <span>Last Updated</span> :{" "}
+            <span>Last Updated </span>
             {tickersData?.last_updated.substring(0, 10)}
           </LastUpdated>
           <Overview>
