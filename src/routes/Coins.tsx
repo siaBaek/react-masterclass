@@ -12,7 +12,10 @@ const Container = styled.div`
 `;
 
 const Header = styled.header`
-  height: 15vh;
+  position: sticky;
+  top: 0;
+  height: 150px;
+  background: ${(props) => props.theme.bgColor};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -27,19 +30,24 @@ const Coin = styled.li`
   border-radius: 15px;
   a {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     padding: 20px;
     transition: color 0.2s ease-in-out;
   }
   &:hover {
-    a {
+    a div {
       color: ${(props) => props.theme.accentColor};
     }
+  }
+  a div {
+    display: flex;
+    align-items: center;
   }
 `;
 
 const Title = styled.h1`
-  font-size: 48px;
+  font-size: 38px;
   color: ${(props) => props.theme.accentColor};
 `;
 
@@ -82,7 +90,7 @@ function Coins() {
         <title>코인</title>
       </Helmet>
       <Header>
-        <Title>코인</Title>
+        <Title>Top 100 Crypto Coins</Title>
       </Header>
       {isLoading ? (
         <Loader>Loading...</Loader>
@@ -96,10 +104,13 @@ function Coins() {
                   state: { name: coin.name },
                 }}
               >
-                <Img
-                  src={`https://cryptoicon-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`}
-                />
-                {coin.name} &rarr;
+                <div>
+                  <Img
+                    src={`https://cryptoicon-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`}
+                  />
+                  {coin.name} &rarr;
+                </div>
+                <p>Rank {coin.rank}</p>
               </Link>
             </Coin>
           ))}

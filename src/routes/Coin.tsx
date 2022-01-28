@@ -6,11 +6,10 @@ import {
   useParams,
   useRouteMatch,
 } from "react-router";
-import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Price from "./Price";
 import Chart from "./Chart";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { fetchCoinInfo, fetchCoinTickers } from "../api";
 import { useQuery } from "react-query";
 
@@ -20,16 +19,31 @@ const Title = styled.h1`
 `;
 
 const Container = styled.div`
-  padding: 0px 20px;
+  padding: 20px 20px;
   max-width: 480px;
   margin: 0 auto;
 `;
 
 const Header = styled.header`
-  height: 15vh;
+  height: 120px;
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const GoBack = styled.div`
+  button {
+    background: ${(props) => props.theme.accentColor};
+    border: 0;
+    border-radius: 10px;
+  }
+`;
+
+const Img = styled.img`
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  transform: translateY(-5px);
 `;
 
 const Loader = styled.span`
@@ -37,10 +51,20 @@ const Loader = styled.span`
   text-align: center;
 `;
 
+const LastUpdated = styled.p`
+  margin: 10px 0px;
+  text-align: right;
+  font-size: 13px;
+  span {
+    color: ${(props) => props.theme.accentColor};
+  }
+`;
+
 const Overview = styled.div`
   display: flex;
   justify-content: space-between;
   background-color: rgba(0, 0, 0, 0.5);
+  margin-bottom: 25px;
   padding: 10px 20px;
   border-radius: 10px;
 `;
@@ -54,9 +78,6 @@ const OverviewItem = styled.div`
     text-transform: uppercase;
     margin-bottom: 5px;
   }
-`;
-const Description = styled.p`
-  margin: 20px 0px;
 `;
 
 const Tabs = styled.div`
@@ -72,7 +93,7 @@ const Tab = styled.span<{ isActive: boolean }>`
   font-size: 12px;
   font-weight: 400;
   background-color: rgba(0, 0, 0, 0.5);
-  padding: 7px 0px;
+  padding: 10px 0px;
   border-radius: 10px;
   color: ${(props) =>
     props.isActive ? props.theme.accentColor : props.theme.textColor};
@@ -161,23 +182,8 @@ function Coin() {
     () => fetchCoinTickers(coinId),
     { refetchInterval: 3000 }
   );
-  // const [loading, setLoading] = useState(true);
-  // const [info, setInfo] = useState<InfoData>();
-  // const [priceInfo, setPriceInfo] = useState<PriceData>();
-  // useEffect(() => {
-  //   (async () => {
-  //     const infoData = await (
-  //       await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
-  //     ).json();
-  //     const priceData = await (
-  //       await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
-  //     ).json();
-  //     setInfo(infoData);
-  //     setPriceInfo(priceData);
-  //     setLoading(false);
-  //   })();
-  // }, [coinId]);
   const loading = infoLoading || tickersLoading;
+  const history = useHistory();
   return (
     <Container>
       <Helmet>
@@ -185,7 +191,17 @@ function Coin() {
           {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
         </title>
       </Helmet>
+      <GoBack
+        onClick={() => {
+          history.push("/");
+        }}
+      >
+        <button>Go Home</button>
+      </GoBack>
       <Header>
+        <Img
+          src={`https://cryptoicon-api.vercel.app/api/icon/${tickersData?.symbol.toLowerCase()}`}
+        />
         <Title>
           {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
         </Title>
@@ -195,6 +211,9 @@ function Coin() {
         <Loader>Loading...</Loader>
       ) : (
         <>
+          <LastUpdated>
+            <span>Last Updated</span> : {tickersData?.last_updated}
+          </LastUpdated>
           <Overview>
             <OverviewItem>
               <span>Rank:</span>
@@ -209,11 +228,11 @@ function Coin() {
               <span>${tickersData?.quotes.USD.price.toFixed(3)}</span>
             </OverviewItem>
           </Overview>
-          <Description>{infoData?.description}</Description>
+
           <Overview>
             <OverviewItem>
               <span>Total Suply:</span>
-              <span>{tickersData?.total_supply}</span>
+              <span>{tickersData?.total_supply.toLocaleString()}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Max Supply:</span>
@@ -230,7 +249,7 @@ function Coin() {
           </Tabs>
           <Switch>
             <Route path={`/:coinId/price`}>
-              <Price />
+              <Price coinId={coinId} />
             </Route>
             <Route path={`/:coinId/chart`}>
               <Chart coinId={coinId} />
